@@ -1,0 +1,79 @@
+{##
+ # SocietoUtilDoctorBundle
+ # Copyright (C) 2011 Kousuke Ebihara
+ #
+ # This program is under the EPL/GPL/LGPL triple license.
+ # Please see the Resources/meta/LICENSE file that was distributed with this file.
+ #}
+<!DOCTYPE>
+<html>
+    <head>
+        <style type="text/css">
+            body {
+                background: white url('data:image/png;base64,{{ base64_image }}') no-repeat fixed right bottom;
+            }
+
+            div.detail {
+                font-weight: bold;
+                margin: 0 2em;
+            }
+
+            div.info {
+                border: 1px solid gray;
+                padding: 10px;
+                margin: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>A medical certificate of this site</h1>
+
+        {% if summary %}
+            <h2>{{ summary }}</h2>
+
+            <div class="detail">
+            {{ detail | raw }}
+            </div>
+
+            <p>If you feel this advice is not right, please consider for reporting this situation as bug to Societo.</p>
+        {% else %}
+            <h2>This might be a bug of Societo or plugins.</h2>
+
+            <p>Please consider for reporting this bug to Societo.</p>
+        {% endif %}
+
+        <p>Your report should be contained like the following informations. Normally, you just need to copy the following and paste it to bug reporting form. If you find your secret informations in it, you should mask them before submitting report.</p>
+
+        <div class="info">
+            <h3>Exception</h3>
+            <dl>
+                <dt>{{ exception.class }}</dt>
+                <dd>{{ exception.message|e|replace({"\n": '<br />'})|format_file_from_text }}</dd>
+            </dl>
+
+            <h3>Stack traces</h3>
+            <ul>
+            {% for position, e in exception.toarray %}
+                {% for i, trace in e.trace %}
+                    <li>{% include 'TwigBundle:Exception:trace.html.twig' with { 'prefix': position, 'i': i, 'trace': trace } only %}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+
+            <h3>Environment</h3>
+            <dl>
+                {% for k, v in env %}
+                <dt>{{ k }}</dt>
+                <dd>{{ v }}</dd>
+                {% endfor %}
+            </dl>
+
+            <h3>Extensions</h3>
+            <ul>
+                {% for name, version in ext %}
+                    <li>{{ name }} (version: {{ version | default('UNKNOWN') }})</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </body>
+</html>
